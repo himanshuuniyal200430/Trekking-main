@@ -76,16 +76,23 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 5000;
 
-mongoose
-  .connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/trek_booking')
-  .then(async () => {
-    console.log('MongoDB connected');
+// Start server first so it passes health checks and doesn't crash on deploy
+app.listen(PORT, () => {
+  console.log(`Server running at http://localhost:${PORT}`);
+});
+
+// Database connection with error control and retry logic
+const connectDB = async () => {
+  try {
+    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/trek_booking');
+    console.log('MongoDB connected successfully');
     await seedAdmin(); // creates default admin if none exists
-    app.listen(PORT, () => {
-      console.log(`Server running at http://localhost:${PORT}`);
-    });
-  })
-  .catch((err) => {
-    console.error('MongoDB connection error:', err);
-    process.exit(1);
-  });
+  } catch (err) {
+    console.error('MongoDB connection error:', err.message);
+    console.log('Server is running, but database connection failed. Retrying in 5 seconds...');
+    // Retry connection after 5 seconds instead of crashing
+    setTimeout(connectDB, 5000);
+  }
+};
+
+connectDB();
