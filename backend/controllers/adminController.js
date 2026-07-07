@@ -51,10 +51,11 @@ export const login = async (req, res) => {
     const token = generateToken(admin);
 
     // Set the httpOnly cookie the auth middleware expects
+    const isProduction = process.env.NODE_ENV === 'production';
     res.cookie('adminToken', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production', // false on localhost (plain http)
-      sameSite: 'lax',
+      secure: isProduction,           // HTTPS required in prod
+      sameSite: isProduction ? 'none' : 'lax', // cross-origin in prod, lax on localhost
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days, matches JWT expiresIn
     });
 
