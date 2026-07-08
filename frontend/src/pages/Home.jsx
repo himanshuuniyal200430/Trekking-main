@@ -171,9 +171,9 @@ const FeaturedPackages = () => {
           <h2 className="text-3xl sm:text-4xl font-bold text-[#0a1628]">
             Our Featured Trips
           </h2>
-          <p className="text-gray-500 mt-3 max-w-xl mx-auto text-sm">
+          {/* <p className="text-gray-500 mt-3 max-w-xl mx-auto text-sm">
             Carefully curated women-only trek experiences across India's most stunning landscapes, cultural hotspots, and coastal escapes.
-          </p>
+          </p> */}
         </div>
 
         {loading ? (
