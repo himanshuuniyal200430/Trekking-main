@@ -59,30 +59,30 @@ const Hero = () => (
   </section>
 );
 
-// ─── Stats Section ───────────────────────────────────────────────
-const Stats = () => {
-  const stats = [
-    { value: '5,000+', label: 'Happy Travelers' },
-    { value: '120+', label: 'Trips Completed' },
-    { value: '8+', label: 'Years Experience' },
-    { value: '98%', label: 'Customer Satisfaction' },
-  ];
+// // ─── Stats Section ───────────────────────────────────────────────
+// // const Stats = () => {
+// //   const stats = [
+// //     { value: '5,000+', label: 'Happy Travelers' },
+// //     { value: '120+', label: 'Trips Completed' },
+// //     { value: '8+', label: 'Years Experience' },
+// //     { value: '98%', label: 'Customer Satisfaction' },
+// //   ];
 
-  return (
-    <section className="bg-[#0d1f3c] py-10">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          {stats.map((stat) => (
-            <div key={stat.label} className="text-center">
-              <p className="text-3xl font-bold text-yellow-400">{stat.value}</p>
-              <p className="text-sm text-gray-400 mt-1">{stat.label}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-};
+//   return (
+//     <section className="bg-[#0d1f3c] py-10">
+//       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+//         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+//           {stats.map((stat) => (
+//             <div key={stat.label} className="text-center">
+//               <p className="text-3xl font-bold text-yellow-400">{stat.value}</p>
+//               <p className="text-sm text-gray-400 mt-1">{stat.label}</p>
+//             </div>
+//           ))}
+//         </div>
+//       </div>
+//     </section>
+//   );
+// };
 
 // ─── Featured Packages ───────────────────────────────────────────
 const PackageCard = ({ pkg }) => (
