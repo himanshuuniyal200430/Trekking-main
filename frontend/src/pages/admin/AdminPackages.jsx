@@ -93,7 +93,6 @@ const AdminPackages = () => {
               <thead>
                 <tr className="text-left text-xs text-gray-400 uppercase tracking-wide border-b border-gray-100">
                   <th className="px-6 py-3 font-medium">Package</th>
-                  <th className="px-6 py-3 font-medium">Category</th>
                   <th className="px-6 py-3 font-medium">Difficulty</th>
                   <th className="px-6 py-3 font-medium">Price</th>
                   <th className="px-6 py-3 font-medium">Status</th>
@@ -129,7 +128,6 @@ const AdminPackages = () => {
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-3.5 text-gray-500">{pkg.category}</td>
                     <td className="px-6 py-3.5">
                       <span
                         className={`inline-block px-2.5 py-1 rounded-full text-xs font-medium border ${
