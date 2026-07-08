@@ -621,7 +621,7 @@ const Home = () => {
   return (
     <div>
       <Hero />
-      <Stats />
+      {/* <Stats /> */}
       <FeaturedPackages />
       <WhyUs />
       <About />
