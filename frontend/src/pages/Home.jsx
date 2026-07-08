@@ -219,11 +219,11 @@ const FeaturedPackages = () => {
 // ─── Why Travel With Us ──────────────────────────────────────────
 const WhyUs = () => {
   const reasons = [
-    {
-      icon: <Shield size={28} />,
-      title: 'Women-Only Groups',
-      desc: 'Travel safely in the company of like-minded women with certified female guides.',
-    },
+    // {
+    //   icon: <Shield size={28} />,
+    //   title: 'Women-Only Groups',
+    //   desc: 'Travel safely in the company of like-minded women with certified female guides.',
+    // },
     {
       icon: <HeartHandshake size={28} />,
       title: 'Trusted Hospitality',
