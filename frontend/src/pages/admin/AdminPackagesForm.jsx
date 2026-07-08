@@ -1,9 +1,8 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { X, Plus, Upload, ImageIcon, ChevronLeft } from 'lucide-react';
 import API from '../../api/axios';
-
 
 const difficulties = ['Easy', 'Moderate', 'Difficult', 'Extreme'];
 
@@ -70,26 +69,32 @@ const TagListInput = ({ label, placeholder, values, onChange }) => {
   );
 };
 
-const AdminPackageForm = () => {
-  const navigate = useNavigate();
-  const [submitting, setSubmitting] = useState(false);
+const emptyForm = {
+  title: '',
+  shortDescription: '',
+  fullDescription: '',
+  difficulty: '',
+  days: '',
+  nights: '',
+  priceAmount: '',
+  currency: 'INR',
+  region: '',
+  state: '',
+  groupMin: 1,
+  groupMax: 20,
+  isFeatured: false,
+  isActive: true,
+};
 
-  const [form, setForm] = useState({
-    title: '',
-    shortDescription: '',
-    fullDescription: '',
-    difficulty: '',
-    days: '',
-    nights: '',
-    priceAmount: '',
-    currency: 'INR',
-    region: '',
-    state: '',
-    groupMin: 1,
-    groupMax: 20,
-    isFeatured: false,
-    isActive: true,
-  });
+const AdminPackagesForm = () => {
+  const navigate = useNavigate();
+  const { id } = useParams(); // present only on /admin/packages/edit/:id
+  const isEditMode = Boolean(id);
+
+  const [submitting, setSubmitting] = useState(false);
+  const [loading, setLoading] = useState(isEditMode); // fetching existing package in edit mode
+
+  const [form, setForm] = useState(emptyForm);
 
   const [highlights, setHighlights] = useState([]);
   const [included, setIncluded] = useState([]);
@@ -97,7 +102,61 @@ const AdminPackageForm = () => {
   const [bestSeason, setBestSeason] = useState([]);
   const [tags, setTags] = useState([]);
   const [itinerary, setItinerary] = useState([emptyDay()]);
+
+  // New images picked in this session (not yet uploaded)
   const [images, setImages] = useState([]); // [{ file, previewUrl }]
+  // Images already saved on the package (edit mode only) — kept unless removed
+  const [existingImages, setExistingImages] = useState([]); // [{ url, publicId }]
+
+  // ---------- Load existing package when editing ----------
+  useEffect(() => {
+    if (!isEditMode) return;
+
+    const fetchPackage = async () => {
+      setLoading(true);
+      try {
+        const res = await API.get(`/packages/admin/${id}`);
+        const pkg = res.data.data;
+
+        setForm({
+          title: pkg.title || '',
+          shortDescription: pkg.shortDescription || '',
+          fullDescription: pkg.fullDescription || '',
+          difficulty: pkg.difficulty || '',
+          days: pkg.duration?.days ?? '',
+          nights: pkg.duration?.nights ?? '',
+          priceAmount: pkg.price?.amount ?? '',
+          currency: pkg.price?.currency || 'INR',
+          region: pkg.location?.region || '',
+          state: pkg.location?.state || '',
+          groupMin: pkg.groupSize?.min ?? 1,
+          groupMax: pkg.groupSize?.max ?? 20,
+          isFeatured: Boolean(pkg.isFeatured),
+          isActive: Boolean(pkg.isActive),
+        });
+
+        setHighlights(pkg.highlights || []);
+        setIncluded(pkg.included || []);
+        setExcluded(pkg.excluded || []);
+        setBestSeason(pkg.bestSeason || []);
+        setTags(pkg.tags || []);
+        setItinerary(
+          pkg.itinerary?.length > 0
+            ? pkg.itinerary.map((day) => ({ title: day.title || '', description: day.description || '' }))
+            : [emptyDay()]
+        );
+        setExistingImages(pkg.images || []);
+      } catch (err) {
+        toast.error(err.response?.data?.message || 'Failed to load package');
+        navigate('/admin/packages');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPackage();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, isEditMode]);
 
   const updateField = (field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -117,11 +176,13 @@ const AdminPackageForm = () => {
   };
 
   // ---------- Images ----------
+  const totalImageCount = images.length + existingImages.length;
+
   const handleImageSelect = (e) => {
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
 
-    if (images.length + files.length > 10) {
+    if (totalImageCount + files.length > 10) {
       toast.error('Maximum 10 images allowed');
       return;
     }
@@ -140,6 +201,10 @@ const AdminPackageForm = () => {
       URL.revokeObjectURL(prev[index].previewUrl);
       return prev.filter((_, i) => i !== index);
     });
+  };
+
+  const removeExistingImage = (index) => {
+    setExistingImages((prev) => prev.filter((_, i) => i !== index));
   };
 
   // ---------- Validation ----------
@@ -209,21 +274,47 @@ const AdminPackageForm = () => {
       )
     );
 
+    // New files to upload
     images.forEach((img) => formData.append('images', img.file));
+
+    // In edit mode, tell the backend which previously-uploaded images survived
+    // (i.e. weren't removed in this session) so it doesn't delete them.
+    if (isEditMode) {
+      formData.append('existingImages', JSON.stringify(existingImages));
+    }
 
     setSubmitting(true);
     try {
-      await API.post('/packages', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-      toast.success('Package created successfully');
+      if (isEditMode) {
+        await API.put(`/packages/${id}`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+        toast.success('Package updated successfully');
+      } else {
+        await API.post('/packages', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+        toast.success('Package created successfully');
+      }
       navigate('/admin/packages');
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Failed to create package');
+      toast.error(
+        err.response?.data?.message || `Failed to ${isEditMode ? 'update' : 'create'} package`
+      );
     } finally {
       setSubmitting(false);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="max-w-4xl space-y-4">
+        {[...Array(4)].map((_, i) => (
+          <div key={i} className="animate-pulse bg-gray-100 rounded-xl h-40" />
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-4xl">
@@ -236,8 +327,14 @@ const AdminPackageForm = () => {
       </button>
 
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-[#0a1628]">Add New Package</h1>
-        <p className="text-sm text-gray-400 mt-1">Create a new trek package for the public site</p>
+        <h1 className="text-2xl font-bold text-[#0a1628]">
+          {isEditMode ? 'Edit Package' : 'Add New Package'}
+        </h1>
+        <p className="text-sm text-gray-400 mt-1">
+          {isEditMode
+            ? 'Update the details of this trek package'
+            : 'Create a new trek package for the public site'}
+        </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -423,15 +520,36 @@ const AdminPackageForm = () => {
             />
           </label>
 
-          {images.length === 0 ? (
+          {totalImageCount === 0 ? (
             <div className="flex items-center gap-2 text-gray-300 text-sm">
               <ImageIcon size={16} />
               No images selected yet
             </div>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {/* Existing images already saved on the package (edit mode) */}
+              {existingImages.map((img, i) => (
+                <div key={`existing-${i}`} className="relative group rounded-lg overflow-hidden aspect-square">
+                  <img
+                    src={img.url}
+                    alt={`Existing ${i + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                  <span className="absolute bottom-1.5 left-1.5 bg-black/60 text-white text-[10px] px-1.5 py-0.5 rounded">
+                    Saved
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => removeExistingImage(i)}
+                    className="absolute top-1.5 right-1.5 bg-black/60 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              ))}
+              {/* Newly picked images, not yet uploaded */}
               {images.map((img, i) => (
-                <div key={i} className="relative group rounded-lg overflow-hidden aspect-square">
+                <div key={`new-${i}`} className="relative group rounded-lg overflow-hidden aspect-square">
                   <img
                     src={img.previewUrl}
                     alt={`Upload ${i + 1}`}
@@ -566,7 +684,13 @@ const AdminPackageForm = () => {
             disabled={submitting}
             className="bg-[#0a1628] text-white font-semibold text-sm px-8 py-3 rounded-full hover:bg-[#0f1f38] transition-colors disabled:opacity-60"
           >
-            {submitting ? 'Creating...' : 'Create Package'}
+            {submitting
+              ? isEditMode
+                ? 'Saving...'
+                : 'Creating...'
+              : isEditMode
+              ? 'Save Changes'
+              : 'Create Package'}
           </button>
           <button
             type="button"
@@ -581,4 +705,4 @@ const AdminPackageForm = () => {
   );
 };
 
-export default AdminPackageForm;
+export default AdminPackagesForm;
