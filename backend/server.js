@@ -22,7 +22,7 @@ const app = express();
 
 // Middleware
 const allowedOrigins = [
-  'https://trekking-2rih.onrender.com',
+  'https://matrikatoursandtravels.onrender.com',
   process.env.FRONTEND_URL,
   'http://localhost:5173',
   'http://localhost:5174',
