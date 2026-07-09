@@ -24,8 +24,32 @@ const Footer = () => {
               </div>
             </Link>
             <p className="text-sm text-gray-400 leading-relaxed">
-              Empowering travelers to explore the world fearlessly. Every journey thoughtfully crafted for safety, comfort, and unforgettable memories — with a special touch of women-led expertise guiding the way.
-            </p>
+  Find Your Perfect Trail 🧭  
+  We believe the mountains should be accessible to everyone, exactly the way they want to experience them.  
+  Whether you are looking for sisterhood in the wild, a tailor-made private adventure, or a vibrant social vibe, we have the perfect trek for you.
+</p>
+
+<p className="text-sm text-gray-400 leading-relaxed mt-4">
+  🎒 <strong>Mixed Social Group Treks</strong>  
+  Perfect gender ratios intentionally balanced for a great group dynamic.  
+  Vibrant social vibes where solo travelers, guys, and girls connect naturally.  
+  Shared adventures that turn strangers into a tight-knit trekking family.
+</p>
+
+<p className="text-sm text-gray-400 leading-relaxed mt-4">
+  🌸 <strong>Women-Only Group Treks</strong>  
+  Empowering spaces designed by women, for women.  
+  Safe environments to conquer new heights and build lifelong sisterhood.  
+  Comfortable settings surrounded by supportive, like-minded female adventurers.
+</p>
+
+<p className="text-sm text-gray-400 leading-relaxed mt-4">
+  🗺️ <strong>100% Customized Private Treks</strong>  
+  Your itinerary built completely from scratch around your schedule.  
+  Your pace without the pressure of keeping up with a crowd.  
+  Your circle perfect for families, couples, corporate teams, or close friends.
+</p>
+
             {/* Social Links */}
             <div className="flex items-center gap-3">
               <a href="https://www.facebook.com/share/1DB6zqzUeP/" className="w-8 h-8 bg-[#0d1f3c] hover:bg-yellow-500 hover:text-[#0a1628] text-gray-400 rounded-full flex items-center justify-center transition-colors">
