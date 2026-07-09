@@ -7,6 +7,7 @@ import {
   getDashboardStats,
   getBookingById,
   updateBookingStatus,
+  deleteBooking,
 } from '../controllers/bookingController.js';
 
 const router = express.Router();
@@ -20,5 +21,6 @@ router.get('/dashboard', protect, getDashboardStats);
 router.get('/', protect, getAllBookings);
 router.get('/:id', protect, getBookingById);
 router.patch('/:id/status', protect, updateBookingStatus);
+router.delete('/:id', protect, deleteBooking);
 
 export default router;
