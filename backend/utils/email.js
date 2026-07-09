@@ -6,6 +6,11 @@ const transporter = nodemailer.createTransport({
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
+  // Render (and some other cloud hosts) don't reliably support outbound IPv6.
+  // Gmail's SMTP hostname resolves to an IPv6 address first, Node tries that,
+  // and the connection fails with ENETUNREACH / times out before ever falling
+  // back to IPv4. Forcing family:4 skips straight to IPv4 and avoids this.
+  family: 4,
   // Local dev workaround: some antivirus/network tools (common on Windows)
   // inject a self-signed certificate into HTTPS/SMTP traffic for inspection,
   // which Node rejects by default. Safe to disable for local development;
