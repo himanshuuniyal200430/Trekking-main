@@ -10,6 +10,11 @@ import {
   Users,
   ChevronLeft,
   ChevronRight,
+  Clock,
+  CheckCircle2,
+  XCircle,
+  BadgeCheck,
+  Trash2,
 } from 'lucide-react';
 import API from '../../api/axios';
 
@@ -291,6 +296,19 @@ const BookingDetailModal = ({ booking, onClose, onUpdated }) => {
   );
 };
 
+// ---------- Stats Strip ----------
+const StatCard = ({ label, value, icon: Icon, accent }) => (
+  <div className="bg-white rounded-xl border border-gray-200 px-5 py-4 flex items-center gap-3.5">
+    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${accent}`}>
+      <Icon size={18} />
+    </div>
+    <div>
+      <p className="text-xl font-bold text-[#0a1628] leading-none">{value}</p>
+      <p className="text-xs text-gray-400 mt-1">{label}</p>
+    </div>
+  </div>
+);
+
 // ---------- Main Page ----------
 const AdminBookings = () => {
   const [bookings, setBookings] = useState([]);
@@ -299,6 +317,24 @@ const AdminBookings = () => {
   const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState({ total: 0, pages: 1 });
   const [selectedBooking, setSelectedBooking] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
+
+  // Dashboard summary (totals across ALL bookings, independent of the current filter/page)
+  const [stats, setStats] = useState(null);
+  const [statsLoading, setStatsLoading] = useState(true);
+
+  const fetchDashboard = async () => {
+    setStatsLoading(true);
+    try {
+      const res = await API.get('/bookings/dashboard');
+      setStats(res.data.data);
+    } catch (err) {
+      // Non-fatal — the table still works without the summary strip
+      console.error('Failed to load booking dashboard stats', err);
+    } finally {
+      setStatsLoading(false);
+    }
+  };
 
   const fetchBookings = async () => {
     setLoading(true);
@@ -315,6 +351,10 @@ const AdminBookings = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchDashboard();
+  }, []);
 
   useEffect(() => {
     fetchBookings();
@@ -340,6 +380,28 @@ const AdminBookings = () => {
     setBookings((prev) =>
       prev.map((b) => (b._id === updatedBooking._id ? { ...b, ...updatedBooking } : b))
     );
+    // Status just changed, so the totals in the summary strip are now stale — refresh quietly
+    fetchDashboard();
+  };
+
+  const handleDelete = async (booking) => {
+    const confirmed = window.confirm(
+      `Delete booking ${booking.bookingId} for "${booking.contactPerson?.name}"? This cannot be undone.`
+    );
+    if (!confirmed) return;
+
+    setDeletingId(booking._id);
+    try {
+      await API.delete(`/bookings/${booking._id}`);
+      setBookings((prev) => prev.filter((b) => b._id !== booking._id));
+      toast.success('Booking deleted');
+      // Deleted booking's status no longer counts toward totals — refresh quietly
+      fetchDashboard();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to delete booking');
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   return (
@@ -347,6 +409,42 @@ const AdminBookings = () => {
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-[#0a1628]">Bookings</h1>
         <p className="text-sm text-gray-400 mt-1">Review and manage trek bookings</p>
+      </div>
+
+      {/* Stats Strip */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+        {statsLoading ? (
+          [...Array(4)].map((_, i) => (
+            <div key={i} className="animate-pulse bg-gray-100 rounded-xl h-[70px]" />
+          ))
+        ) : (
+          <>
+            <StatCard
+              label="Pending"
+              value={stats?.bookings?.pending ?? 0}
+              icon={Clock}
+              accent="bg-yellow-50 text-yellow-600"
+            />
+            <StatCard
+              label="Approved"
+              value={stats?.bookings?.approved ?? 0}
+              icon={BadgeCheck}
+              accent="bg-green-50 text-green-600"
+            />
+            <StatCard
+              label="Completed"
+              value={stats?.bookings?.completed ?? 0}
+              icon={CheckCircle2}
+              accent="bg-blue-50 text-blue-600"
+            />
+            <StatCard
+              label="Cancelled"
+              value={stats?.bookings?.cancelled ?? 0}
+              icon={XCircle}
+              accent="bg-red-50 text-red-600"
+            />
+          </>
+        )}
       </div>
 
       {/* Status Filter */}
@@ -395,6 +493,7 @@ const AdminBookings = () => {
                     <th className="px-6 py-3 font-medium">Trek Date</th>
                     <th className="px-6 py-3 font-medium">Group</th>
                     <th className="px-6 py-3 font-medium">Status</th>
+                    <th className="px-6 py-3 font-medium text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
@@ -423,6 +522,17 @@ const AdminBookings = () => {
                         >
                           {booking.status}
                         </span>
+                      </td>
+                      <td className="px-6 py-3.5" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex items-center justify-end">
+                          <button
+                            onClick={() => handleDelete(booking)}
+                            disabled={deletingId === booking._id}
+                            className="p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors disabled:opacity-50"
+                          >
+                            <Trash2 size={15} />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
