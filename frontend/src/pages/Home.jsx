@@ -357,7 +357,7 @@ const About = () => {
           <h2 className="text-3xl sm:text-4xl font-bold text-[#0a1628] mb-2">
             Meet the Team
           </h2>
-          <p className="text-gray-400 text-sm">Six passionate people. One mission.</p>
+          <p className="text-gray-400 text-sm">Five passionate people. One mission.</p>
         </div>
 
         {/* Team Grid */}
