@@ -1,24 +1,10 @@
-import nodemailer from 'nodemailer';
+// Uses Resend's HTTP API instead of SMTP (nodemailer/Gmail). SMTP connections
+// were timing out on Render (raw socket connections on ports 465/587 appear
+// to be blocked or heavily restricted on this hosting tier). Resend sends
+// email via a normal HTTPS POST request, which works the same as any other
+// API call your server makes — no socket/port issues.
 
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-  // Render (and some other cloud hosts) don't reliably support outbound IPv6.
-  // Gmail's SMTP hostname resolves to an IPv6 address first, Node tries that,
-  // and the connection fails with ENETUNREACH / times out before ever falling
-  // back to IPv4. Forcing family:4 skips straight to IPv4 and avoids this.
-  family: 4,
-  // Local dev workaround: some antivirus/network tools (common on Windows)
-  // inject a self-signed certificate into HTTPS/SMTP traffic for inspection,
-  // which Node rejects by default. Safe to disable for local development;
-  // remove this in production or once the root cause is fixed.
-  tls: {
-    rejectUnauthorized: false,
-  },
-});
+const RESEND_API_URL = 'https://api.resend.com/emails';
 
 const formatDate = (date) =>
   new Date(date).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
@@ -121,12 +107,24 @@ export const sendBookingStatusEmail = async (booking) => {
 
     const { subject, html } = buildTemplate(booking);
 
-    await transporter.sendMail({
-      from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
-      to,
-      subject,
-      html,
+    const response = await fetch(RESEND_API_URL, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: process.env.EMAIL_FROM, // e.g. "Matrika Treks <noreply@matrikatoursandtravels.com>"
+        to,
+        subject,
+        html,
+      }),
     });
+
+    if (!response.ok) {
+      const errorBody = await response.text();
+      throw new Error(`Resend API error (${response.status}): ${errorBody}`);
+    }
 
     console.log(`Status email sent for booking ${booking.bookingId} (${booking.status})`);
   } catch (err) {
