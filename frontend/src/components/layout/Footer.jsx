@@ -152,10 +152,10 @@ const Footer = () => {
               <ul className="space-y-2">
                 {[
                   'Valley of Flowers Trek',
-                  'Spiti Valley Adventure',
-                  'Kerala Backwater Bliss',
-                  'Rajasthan Heritage Trail',
-                  'Andaman Island Escape',
+                  'Chopta Tungnath Trek',
+                  'Madhyamaheshwar Trek',
+                  'Kedarkantha Trek',
+                  'Tirthan Jibhi Trek',
                 ].map((trek) => (
                   <li key={trek}>
                     <Link
