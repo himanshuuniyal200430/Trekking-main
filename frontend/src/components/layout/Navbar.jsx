@@ -28,8 +28,8 @@ const Navbar = () => {
               className="w-10 h-10 rounded-full object-cover object-center flex-shrink-0"
             />
             <div className="leading-tight">
-              <p className="font-bold text-sm text-white">Matrika Tours</p>
-              <p className="text-xs text-yellow-400">& Travels</p>
+              <p className="font-bold text-sm text-white">Matrika Tours & Travels</p>
+              {/* <p className="text-xs text-yellow-400">& Travels</p> */}
             </div>
           </Link>
 
