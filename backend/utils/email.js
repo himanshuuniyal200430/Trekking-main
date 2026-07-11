@@ -1,10 +1,16 @@
-// Uses Resend's HTTP API instead of SMTP (nodemailer/Gmail). SMTP connections
-// were timing out on Render (raw socket connections on ports 465/587 appear
-// to be blocked or heavily restricted on this hosting tier). Resend sends
-// email via a normal HTTPS POST request, which works the same as any other
-// API call your server makes — no socket/port issues.
+// Sends booking status emails using the Gmail API (HTTPS), so emails appear
+// as sent from your real Gmail account (e.g. matrikatoursandtravels3@gmail.com)
+// instead of a generic "noreply@" address.
+//
+// We deliberately do NOT use Nodemailer's Gmail/SMTP transport here — even
+// with OAuth2, Nodemailer's Gmail transport still connects over raw SMTP
+// sockets (smtp.gmail.com:465), which are blocked on Render (see the old
+// comment in the previous version of this file). The Gmail REST API sends
+// mail via a normal HTTPS POST request instead, so it works the same as any
+// other API call your server makes — no blocked ports involved.
 
-const RESEND_API_URL = 'https://api.resend.com/emails';
+const GMAIL_TOKEN_URL = 'https://oauth2.googleapis.com/token';
+const GMAIL_SEND_URL = 'https://gmail.googleapis.com/gmail/v1/users/me/messages/send';
 
 const formatDate = (date) =>
   new Date(date).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
@@ -92,6 +98,57 @@ const templates = {
   Completed: completedTemplate,
 };
 
+// Exchanges the long-lived refresh token for a short-lived access token.
+// This happens on every send — access tokens expire in ~1 hour, so we don't
+// bother caching it; one extra HTTPS call per email is negligible.
+const getAccessToken = async () => {
+  const response = await fetch(GMAIL_TOKEN_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      client_id: process.env.GMAIL_CLIENT_ID,
+      client_secret: process.env.GMAIL_CLIENT_SECRET,
+      refresh_token: process.env.GMAIL_REFRESH_TOKEN,
+      grant_type: 'refresh_token',
+    }),
+  });
+
+  if (!response.ok) {
+    const errorBody = await response.text();
+    throw new Error(`Failed to refresh Gmail access token (${response.status}): ${errorBody}`);
+  }
+
+  const data = await response.json();
+  return data.access_token;
+};
+
+// Base64url-encodes a string (Gmail API requires base64url, not plain base64).
+const base64UrlEncode = (str) =>
+  Buffer.from(str, 'utf-8')
+    .toString('base64')
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=+$/, '');
+
+// Builds a raw RFC 2822 MIME email message that the Gmail API expects.
+const buildRawMessage = ({ from, to, subject, html }) => {
+  // Encode the subject so non-ASCII characters (e.g. ₹, emoji) survive.
+  const encodedSubject = `=?UTF-8?B?${Buffer.from(subject, 'utf-8').toString('base64')}?=`;
+
+  const message = [
+    `From: ${from}`,
+    `To: ${to}`,
+    `Subject: ${encodedSubject}`,
+    'MIME-Version: 1.0',
+    'Content-Type: text/html; charset="UTF-8"',
+    'Content-Transfer-Encoding: 7bit',
+    '',
+    html,
+  ].join('\r\n');
+
+  return base64UrlEncode(message);
+};
+
 // Sends a status-update email for a booking. Deliberately swallows all errors —
 // a failed email must never block or fail the booking status update itself.
 export const sendBookingStatusEmail = async (booking) => {
@@ -107,23 +164,27 @@ export const sendBookingStatusEmail = async (booking) => {
 
     const { subject, html } = buildTemplate(booking);
 
-    const response = await fetch(RESEND_API_URL, {
+    const accessToken = await getAccessToken();
+
+    const raw = buildRawMessage({
+      from: process.env.EMAIL_FROM, // e.g. "Matrika Treks <matrikatoursandtravels3@gmail.com>"
+      to,
+      subject,
+      html,
+    });
+
+    const response = await fetch(GMAIL_SEND_URL, {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+        Authorization: `Bearer ${accessToken}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        from: process.env.EMAIL_FROM, // e.g. "Matrika Treks <noreply@matrikatoursandtravels.com>"
-        to,
-        subject,
-        html,
-      }),
+      body: JSON.stringify({ raw }),
     });
 
     if (!response.ok) {
       const errorBody = await response.text();
-      throw new Error(`Resend API error (${response.status}): ${errorBody}`);
+      throw new Error(`Gmail API error (${response.status}): ${errorBody}`);
     }
 
     console.log(`Status email sent for booking ${booking.bookingId} (${booking.status})`);
