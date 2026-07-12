@@ -347,7 +347,7 @@ const PackageDetail = () => {
                 <h3 className="text-white font-semibold mb-1">Need Help?</h3>
                 <p className="text-gray-400 text-xs mb-4">Our team is happy to help you plan your perfect trek.</p>
                 <a href="tel:+91-9027378308" className="flex items-center gap-2 text-yellow-400 text-sm hover:text-yellow-300 transition-colors mb-2"><Phone size={14} /> +91-9027378308</a>
-                <a href="mailto: matrikatoursandtravels@gmail.com" className="flex items-center gap-2 text-yellow-400 text-sm hover:text-yellow-300 transition-colors"><Mail size={14} /> matrikatoursandtravels@gmail.com</a>
+                <a href="mailto: matrikatoursandtravels3@gmail.com" className="flex items-center gap-2 text-yellow-400 text-sm hover:text-yellow-300 transition-colors"><Mail size={14} />matrikatoursandtravels3@gmail.com</a>
               </div>
             </div>
           </div>
