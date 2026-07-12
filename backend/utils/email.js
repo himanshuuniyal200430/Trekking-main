@@ -39,8 +39,8 @@ const approvedTemplate = (booking) => ({
           <tr><td style="padding: 8px 0; color: #6b7280;">Booking ID</td><td style="padding: 8px 0; font-weight: 600;">${booking.bookingId}</td></tr>
           <tr><td style="padding: 8px 0; color: #6b7280;">Trek Date</td><td style="padding: 8px 0; font-weight: 600;">${formatDate(booking.trekDate)}</td></tr>
           <tr><td style="padding: 8px 0; color: #6b7280;">Group Size</td><td style="padding: 8px 0; font-weight: 600;">${booking.groupSize}</td></tr>
-          ${booking.package?.price ? `<tr><td style="padding: 8px 0; color: #6b7280;">Price per Person</td><td style="padding: 8px 0; font-weight: 600;">${formatPrice(booking.package.price)}</td></tr>` : ''}
-          ${booking.package?.price ? `<tr><td style="padding: 8px 0; color: #6b7280;">Total Price (${booking.groupSize} ${booking.groupSize === 1 ? 'person' : 'people'})</td><td style="padding: 8px 0; font-weight: 700;">${formatPrice(calculateTotalPrice(booking.package.price, booking.groupSize))}</td></tr>` : ''}
+          // ${booking.package?.price ? `<tr><td style="padding: 8px 0; color: #6b7280;">Price per Person</td><td style="padding: 8px 0; font-weight: 600;">${formatPrice(booking.package.price)}</td></tr>` : ''}
+          // ${booking.package?.price ? `<tr><td style="padding: 8px 0; color: #6b7280;">Total Price (${booking.groupSize} ${booking.groupSize === 1 ? 'person' : 'people'})</td><td style="padding: 8px 0; font-weight: 700;">${formatPrice(calculateTotalPrice(booking.package.price, booking.groupSize))}</td></tr>` : ''}
         </table>
         ${booking.adminNotes ? `<p style="background: #f9fafb; padding: 12px 16px; border-radius: 8px; font-size: 14px;"><strong>Note from our team:</strong> ${booking.adminNotes}</p>` : ''}
         <p>We're excited to have you on this trek. If you have any questions, just reply to this email.</p>
