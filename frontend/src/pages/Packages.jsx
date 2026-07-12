@@ -45,10 +45,10 @@ const PackageCard = ({ pkg }) => (
           <Clock size={12} />
           {pkg.duration?.days}D / {pkg.duration?.nights}N
         </span>
-        <span className="flex items-center gap-1">
+        {/* <span className="flex items-center gap-1">
           <Users size={12} />
           {pkg.groupSize?.min}–{pkg.groupSize?.max} People
-        </span>
+        </span> */}
       </div>
       <div className="flex items-center justify-between pt-3 border-t border-gray-100">
         <div>
