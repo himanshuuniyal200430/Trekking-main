@@ -156,7 +156,25 @@ const BookingForm = ({ pkg }) => {
                   </div>
                   <input type="text" placeholder="Full Name *" value={t.name} onChange={(e) => updateTraveler(i, 'name', e.target.value)} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-yellow-400 bg-white" />
                   <div className="grid grid-cols-2 gap-2">
-                    <input type="number" placeholder="Age *" value={t.age} onChange={(e) => updateTraveler(i, 'age', e.target.value)} className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-yellow-400 bg-white" />
+<input
+  type="number"
+  placeholder="Age *"
+  value={t.age}
+  min="0"
+  max="120"
+  onChange={(e) => {
+    const val = e.target.value;
+    if (val === '' || Number(val) >= 0) {
+      updateTraveler(i, 'age', val);
+    }
+  }}
+  onKeyDown={(e) => {
+    if (e.key === '-' || e.key === 'e' || e.key === 'E') {
+      e.preventDefault();
+    }
+  }}
+  className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-yellow-400 bg-white"
+/>
                     <select value={t.gender} onChange={(e) => updateTraveler(i, 'gender', e.target.value)} className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-yellow-400 bg-white">
                       <option value="Female">Female</option>
                       <option value="Male">Male</option>
