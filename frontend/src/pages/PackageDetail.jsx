@@ -338,7 +338,7 @@ const PackageDetail = () => {
                   <div className="flex justify-between"><span className="text-gray-400">Duration</span><span className="font-medium">{pkg.duration?.days}D / {pkg.duration?.nights}N</span></div>
                   <div className="flex justify-between"><span className="text-gray-400">Difficulty</span><span className="font-medium">{pkg.difficulty}</span></div>
                   {/* <div className="flex justify-between"><span className="text-gray-400">Group Size</span><span className="font-medium">{pkg.groupSize?.min}–{pkg.groupSize?.max}</span></div> */}
-                  <div className="flex justify-between"><span className="text-gray-400">Category</span><span className="font-medium">{pkg.category}</span></div>
+                  {/* <div className="flex justify-between"><span className="text-gray-400">Category</span><span className="font-medium">{pkg.category}</span></div> */}
                 </div>
                 <BookingForm pkg={pkg} />
               </div>
