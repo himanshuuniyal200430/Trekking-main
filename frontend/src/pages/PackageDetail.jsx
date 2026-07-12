@@ -236,7 +236,7 @@ const PackageDetail = () => {
               <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
                 <span className="flex items-center gap-1"><MapPin size={14} className="text-yellow-500" />{pkg.location?.region}, {pkg.location?.state}</span>
                 <span className="flex items-center gap-1"><Clock size={14} className="text-yellow-500" />{pkg.duration?.days} Days / {pkg.duration?.nights} Nights</span>
-                <span className="flex items-center gap-1"><Users size={14} className="text-yellow-500" />{pkg.groupSize?.min}–{pkg.groupSize?.max} People</span>
+                {/* <span className="flex items-center gap-1"><Users size={14} className="text-yellow-500" />{pkg.groupSize?.min}–{pkg.groupSize?.max} People</span> */}
               </div>
             </div>
 
@@ -337,7 +337,7 @@ const PackageDetail = () => {
                 <div className="space-y-2 text-sm text-gray-600 mb-4 pb-4 border-b border-gray-100">
                   <div className="flex justify-between"><span className="text-gray-400">Duration</span><span className="font-medium">{pkg.duration?.days}D / {pkg.duration?.nights}N</span></div>
                   <div className="flex justify-between"><span className="text-gray-400">Difficulty</span><span className="font-medium">{pkg.difficulty}</span></div>
-                  <div className="flex justify-between"><span className="text-gray-400">Group Size</span><span className="font-medium">{pkg.groupSize?.min}–{pkg.groupSize?.max}</span></div>
+                  {/* <div className="flex justify-between"><span className="text-gray-400">Group Size</span><span className="font-medium">{pkg.groupSize?.min}–{pkg.groupSize?.max}</span></div> */}
                   <div className="flex justify-between"><span className="text-gray-400">Category</span><span className="font-medium">{pkg.category}</span></div>
                 </div>
                 <BookingForm pkg={pkg} />
@@ -346,8 +346,8 @@ const PackageDetail = () => {
               <div className="bg-[#0a1628] rounded-2xl p-5">
                 <h3 className="text-white font-semibold mb-1">Need Help?</h3>
                 <p className="text-gray-400 text-xs mb-4">Our team is happy to help you plan your perfect trek.</p>
-                <a href="tel:+919876543210" className="flex items-center gap-2 text-yellow-400 text-sm hover:text-yellow-300 transition-colors mb-2"><Phone size={14} /> +91 98765 43210</a>
-                <a href="mailto:info@matrikatours.com" className="flex items-center gap-2 text-yellow-400 text-sm hover:text-yellow-300 transition-colors"><Mail size={14} /> info@matrikatours.com</a>
+                <a href="tel:+91-9027378308" className="flex items-center gap-2 text-yellow-400 text-sm hover:text-yellow-300 transition-colors mb-2"><Phone size={14} /> +91-9027378308</a>
+                <a href="mailto: matrikatoursandtravels@gmail.com" className="flex items-center gap-2 text-yellow-400 text-sm hover:text-yellow-300 transition-colors"><Mail size={14} /> matrikatoursandtravels@gmail.com</a>
               </div>
             </div>
           </div>
