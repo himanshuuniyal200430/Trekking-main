@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { MapPin, Phone, Mail } from 'lucide-react';
 import { FaFacebookF, FaInstagram, FaTwitter, FaWhatsapp } from 'react-icons/fa';
-import logo from '../../assets/logo.png';
+// import logo from '../../assets/logo.png';
 
 const Footer = () => {
   return (
@@ -13,7 +13,7 @@ const Footer = () => {
           <div className="w-full">
             <Link to="/" className="flex items-center gap-2 mb-4">
               <img
-                src={logo}
+                src="/logo.png"
                 alt="Matrika Tours & Travels"
                 className="w-10 h-10 rounded-full object-cover object-center flex-shrink-0"
               />
