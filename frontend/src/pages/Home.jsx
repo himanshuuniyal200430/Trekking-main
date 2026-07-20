@@ -195,14 +195,18 @@ const FeaturedPackages = () => {
             <Mountain size={48} className="mx-auto mb-3 opacity-30" />
             <p>No featured packages yet. Check back soon!</p>
           </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {packages.map((pkg) => (
-              <PackageCard key={pkg._id} pkg={pkg} />
-            ))}
-          </div>
-        )}
+      ) : (
+  <div className="relative overflow-hidden">
+    <div className="pointer-events-none absolute inset-y-0 left-0 w-12 sm:w-24 bg-gradient-to-r from-gray-50 to-transparent z-10" />
+    <div className="pointer-events-none absolute inset-y-0 right-0 w-12 sm:w-24 bg-gradient-to-l from-gray-50 to-transparent z-10" />
 
+    <div className="package-marquee-track flex gap-6 w-max">
+      {[...packages, ...packages].map((pkg, i) => (
+        <PackageCard key={`${pkg._id}-${i}`} pkg={pkg} />
+      ))}
+    </div>
+  </div>
+)}
         <div className="text-center mt-10">
           <Link
             to="/packages"
