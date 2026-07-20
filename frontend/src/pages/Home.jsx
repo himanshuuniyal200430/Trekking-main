@@ -86,8 +86,8 @@ const Hero = () => (
 
 // ─── Featured Packages ───────────────────────────────────────────
 const PackageCard = ({ pkg }) => (
-  <div className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-shadow group">
-    <div className="relative overflow-hidden h-48">
+    <div className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-shadow group w-[280px] sm:w-[320px] flex-shrink-0">
+      <div className="relative overflow-hidden h-48">
       {pkg.images?.[0] ? (
         <img
           src={pkg.images[0].url}
