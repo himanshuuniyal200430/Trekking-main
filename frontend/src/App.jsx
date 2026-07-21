@@ -9,6 +9,7 @@ import Home from './pages/Home';
 import Packages from './pages/Packages';
 import PackageDetail from './pages/PackageDetail';
 import Gallery from './pages/Gallery';
+import OurTeam from './pages/OurTeam';
 import FAQ from './pages/FAQ';
 import Contact from './pages/Contact';
 import TermsAndConditions from './pages/TermsandCondition';
@@ -70,6 +71,7 @@ function App() {
           <Route path="/packages" element={<Packages />} />
           <Route path="/packages/:slug" element={<PackageDetail />} />
           <Route path="/gallery" element={<Gallery />} />
+          <Route path="/our-team" element={<OurTeam />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/termsandconditions" element={<TermsAndConditions/>} />
