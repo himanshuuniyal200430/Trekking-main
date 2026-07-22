@@ -1,7 +1,7 @@
 import Ankit from "../assets/Ankit.png";
 import Archana from "../assets/Archana.png";
 import Harshmani from "../assets/Harsh.png";
-import Shivani from "../assets/Shivani.png";
+import Ayush from "../assets/Ayush.png";
 import Arjun from "../assets/Arjun.png";
 
 const team = [
@@ -42,13 +42,13 @@ const team = [
     badgeColor: 'bg-green-50 text-green-800',
   },
   {
-    name: 'Shivani',
-    role: 'Marketing Manager',
-    initials: 'SH',
-    photo: Shivani,
-    av: 'bg-amber-100 text-amber-900',
-    badge: 'Growth',
-    badgeColor: 'bg-purple-50 text-purple-800',
+ name: 'Ayush Sindhwal',
+  role: 'Marketing Manager',
+  initials: 'AY',
+  photo: Ayush,
+  av: 'bg-amber-100 text-amber-900',
+  badge: 'Growth',
+  badgeColor: 'bg-purple-50 text-purple-800',
   },
 ];
 
