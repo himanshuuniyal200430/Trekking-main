@@ -83,6 +83,7 @@ const emptyForm = {
   groupMin: 1,
   groupMax: 20,
   isFeatured: false,
+  showInTrekSection: true,
   isActive: true,
 };
 
@@ -132,6 +133,7 @@ const AdminPackagesForm = () => {
           groupMin: pkg.groupSize?.min ?? 1,
           groupMax: pkg.groupSize?.max ?? 20,
           isFeatured: Boolean(pkg.isFeatured),
+          showInTrekSection: pkg.showInTrekSection !== undefined ? Boolean(pkg.showInTrekSection) : true,
           isActive: Boolean(pkg.isActive),
         });
 
@@ -238,6 +240,7 @@ const AdminPackagesForm = () => {
     formData.append('fullDescription', form.fullDescription.trim());
     formData.append('difficulty', form.difficulty);
     formData.append('isFeatured', form.isFeatured);
+    formData.append('showInTrekSection', form.showInTrekSection);
     formData.append('isActive', form.isActive);
 
     formData.append(
@@ -655,7 +658,11 @@ const AdminPackagesForm = () => {
 
         {/* Flags */}
         <section className="bg-white rounded-xl border border-gray-200 p-6">
-          <div className="flex flex-col sm:flex-row gap-4 sm:gap-8">
+          <h2 className="font-semibold text-[#0a1628] mb-1">Homepage Placement</h2>
+          <p className="text-xs text-gray-400 mb-4">
+            Choose which homepage carousels this package should appear in. You can pick either, both, or neither.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 sm:gap-8 mb-5">
             <label className="flex items-center gap-2.5 cursor-pointer">
               <input
                 type="checkbox"
@@ -663,8 +670,20 @@ const AdminPackagesForm = () => {
                 onChange={(e) => updateField('isFeatured', e.target.checked)}
                 className="w-4 h-4 rounded border-gray-300 text-yellow-500 focus:ring-yellow-400"
               />
-              <span className="text-sm text-gray-600">Feature this package on the homepage</span>
+              <span className="text-sm text-gray-600">Show in "Featured Trips" section</span>
             </label>
+            <label className="flex items-center gap-2.5 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={form.showInTrekSection}
+                onChange={(e) => updateField('showInTrekSection', e.target.checked)}
+                className="w-4 h-4 rounded border-gray-300 text-yellow-500 focus:ring-yellow-400"
+              />
+              <span className="text-sm text-gray-600">Show in "Trek Packages" section</span>
+            </label>
+          </div>
+
+          <div className="border-t border-gray-100 pt-5 flex flex-col sm:flex-row gap-4 sm:gap-8">
             <label className="flex items-center gap-2.5 cursor-pointer">
               <input
                 type="checkbox"
