@@ -4,20 +4,12 @@ import {
   Shield, Heart, Star, Users, MapPin, Clock, ChevronRight,
   Award, Compass, HeartHandshake, Mountain
 } from 'lucide-react';
-// import Ankit from "../assets/Ankit.png";
-// import Archana from "../assets/Archana.png";
-// import Harshmani from "../assets/Harsh.png";
-// import Shivani from "../assets/Shivani.png";
-// import Arjun from "../assets/Arjun.png";
 import API from '../api/axios';
 
 // ─── Hero Section ───────────────────────────────────────────────
 const Hero = () => (
   <section className="relative min-h-[90vh] flex items-center bg-[#0a1628] overflow-hidden">
-    {/* Background gradient overlay */}
-    <div className="absolute inset-0  to-transparent z-10" />
-
-    {/* Background image placeholder */}
+    <div className="absolute inset-0 to-transparent z-10" />
     <div
       className="absolute inset-0 bg-cover bg-center opacity-40"
       style={{
@@ -25,11 +17,11 @@ const Hero = () => (
           "url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1600&q=80')",
       }}
     />
-
     <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
       <div className="max-w-2xl">
         <p className="text-yellow-400 text-sm font-semibold uppercase tracking-widest mb-3">
-          COMMUNITY-LED • ADVENTURE-FIRST          </p>
+          COMMUNITY-LED • ADVENTURE-FIRST
+        </p>
         <h1 className="text-5xl sm:text-6xl font-bold text-white leading-tight mb-4">
           Empower &{' '}
           <span className="text-yellow-400">Explore</span>
@@ -38,7 +30,7 @@ const Hero = () => (
           "Empower & Explore the Journey Together — for Women & Groups Alike"
         </p>
         <p className="text-gray-400 mb-8 leading-relaxed">
-          Join thousands of fearless explorers discovering India’s most breathtaking, transformative, and empowering destinations — with trips designed especially for women and open to all who seek meaningful travel.
+          Join thousands of fearless explorers discovering India's most breathtaking, transformative, and empowering destinations — with trips designed especially for women and open to all who seek meaningful travel.
         </p>
         <div className="flex flex-wrap gap-4">
           <Link
@@ -59,35 +51,10 @@ const Hero = () => (
   </section>
 );
 
-// // ─── Stats Section ───────────────────────────────────────────────
-// // const Stats = () => {
-// //   const stats = [
-// //     { value: '5,000+', label: 'Happy Travelers' },
-// //     { value: '120+', label: 'Trips Completed' },
-// //     { value: '8+', label: 'Years Experience' },
-// //     { value: '98%', label: 'Customer Satisfaction' },
-// //   ];
-
-//   return (
-//     <section className="bg-[#0d1f3c] py-10">
-//       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-//         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-//           {stats.map((stat) => (
-//             <div key={stat.label} className="text-center">
-//               <p className="text-3xl font-bold text-yellow-400">{stat.value}</p>
-//               <p className="text-sm text-gray-400 mt-1">{stat.label}</p>
-//             </div>
-//           ))}
-//         </div>
-//       </div>
-//     </section>
-//   );
-// };
-
-// ─── Featured Packages ───────────────────────────────────────────
+// ─── Package Card (shared) ───────────────────────────────────────
 const PackageCard = ({ pkg }) => (
-    <div className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-shadow group w-[280px] sm:w-[320px] flex-shrink-0">
-      <div className="relative overflow-hidden h-48">
+  <div className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 group shrink-0 w-[280px] sm:w-[300px]">
+    <div className="relative overflow-hidden h-48">
       {pkg.images?.[0] ? (
         <img
           src={pkg.images[0].url}
@@ -104,7 +71,11 @@ const PackageCard = ({ pkg }) => (
           Featured
         </span>
       )}
-      <span className="absolute top-3 right-3 bg-[#0a1628]/80 text-white text-xs px-2 py-1 rounded-full">
+      <span className={`absolute top-3 right-3 text-white text-xs px-2 py-1 rounded-full font-medium ${
+        pkg.difficulty === 'Easy' ? 'bg-green-500' :
+        pkg.difficulty === 'Moderate' ? 'bg-yellow-500 text-[#0a1628]' :
+        pkg.difficulty === 'Difficult' ? 'bg-orange-500' : 'bg-red-500'
+      }`}>
         {pkg.difficulty}
       </span>
     </div>
@@ -120,10 +91,6 @@ const PackageCard = ({ pkg }) => (
           <Clock size={12} />
           {pkg.duration?.days}D / {pkg.duration?.nights}N
         </span>
-        {/* <span className="flex items-center gap-1">
-          <Users size={12} />
-          Max {pkg.groupSize?.max}
-        </span> */}
       </div>
       <div className="flex items-center justify-between">
         <div>
@@ -143,71 +110,112 @@ const PackageCard = ({ pkg }) => (
   </div>
 );
 
+// ─── Auto-sliding Row (marquee, pauses on hover) ─────────────────
+const ScrollRow = ({ packages, loading }) => {
+  if (loading) {
+    return (
+      <div className="flex gap-5 overflow-x-hidden pb-4">
+        {[...Array(4)].map((_, i) => (
+          <div key={i} className="bg-white rounded-2xl overflow-hidden shadow-md animate-pulse shrink-0 w-[280px]">
+            <div className="h-48 bg-gray-200" />
+            <div className="p-4 space-y-2">
+              <div className="h-3 bg-gray-200 rounded w-1/3" />
+              <div className="h-4 bg-gray-200 rounded w-3/4" />
+              <div className="h-3 bg-gray-200 rounded w-full" />
+              <div className="h-8 bg-gray-200 rounded w-1/3 ml-auto" />
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (packages.length === 0) return null;
+
+  return (
+    <div className="relative overflow-hidden">
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-12 sm:w-20 bg-gradient-to-r from-gray-50 to-transparent z-10" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-12 sm:w-20 bg-gradient-to-l from-gray-50 to-transparent z-10" />
+
+      <div className="package-marquee-track flex gap-5 w-max">
+        {/* render the list twice back-to-back for a seamless infinite loop */}
+        {[...packages, ...packages].map((pkg, i) => (
+          <PackageCard key={`${pkg._id}-${i}`} pkg={pkg} />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// ─── Featured Packages ───────────────────────────────────────────
 const FeaturedPackages = () => {
-  const [packages, setPackages] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [featured, setFeatured] = useState([]);
+  const [allTreks, setAllTreks] = useState([]);
+  const [loadingFeatured, setLoadingFeatured] = useState(true);
+  const [loadingTreks, setLoadingTreks] = useState(true);
 
   useEffect(() => {
-    const fetchPackages = async () => {
+    const fetchFeatured = async () => {
       try {
-        const res = await API.get('/packages?featured=true&limit=6');
-        setPackages(res.data.data);
+        const res = await API.get('/packages?featured=true&limit=10');
+        setFeatured(res.data.data);
       } catch (err) {
         console.error(err);
       } finally {
-        setLoading(false);
+        setLoadingFeatured(false);
       }
     };
-    fetchPackages();
+
+    const fetchAllTreks = async () => {
+      try {
+        const res = await API.get('/packages?trekSection=true&sort=-createdAt&limit=10');
+        setAllTreks(res.data.data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoadingTreks(false);
+      }
+    };
+
+    fetchFeatured();
+    fetchAllTreks();
   }, []);
 
   return (
     <section className="py-16 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-10">
-          <p className="text-yellow-500 text-sm font-semibold uppercase tracking-widest mb-2">
-            Handpicked for You
-          </p>
-          <h2 className="text-3xl sm:text-4xl font-bold text-[#0a1628]">
-            Our Featured Trips
-          </h2>
-          {/* <p className="text-gray-500 mt-3 max-w-xl mx-auto text-sm">
-            Carefully curated women-only trek experiences across India's most stunning landscapes, cultural hotspots, and coastal escapes.
-          </p> */}
+
+        {/* ── Featured Trips ── */}
+        <div className="mb-12">
+          <div className="text-center mb-8">
+            <p className="text-yellow-500 text-sm font-semibold uppercase tracking-widest mb-2">
+              Handpicked for You
+            </p>
+            <h2 className="text-3xl sm:text-4xl font-bold text-[#0a1628]">
+              Our Featured Trips
+            </h2>
+          </div>
+          <ScrollRow packages={featured} loading={loadingFeatured} />
         </div>
 
-        {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[...Array(6)].map((_, i) => (
-              <div key={i} className="bg-white rounded-2xl overflow-hidden shadow-md animate-pulse">
-                <div className="h-48 bg-gray-200" />
-                <div className="p-4 space-y-2">
-                  <div className="h-3 bg-gray-200 rounded w-1/3" />
-                  <div className="h-4 bg-gray-200 rounded w-3/4" />
-                  <div className="h-3 bg-gray-200 rounded w-full" />
-                  <div className="h-8 bg-gray-200 rounded w-1/3 ml-auto" />
-                </div>
-              </div>
-            ))}
+        {/* ── All Treks ── */}
+        <div className="mb-10">
+          <div className="text-center mb-8">
+            <p className="text-yellow-500 text-sm font-semibold uppercase tracking-widest mb-2">
+              Explore More
+            </p>
+            <h2 className="text-3xl sm:text-4xl font-bold text-[#0a1628]">
+              Our Trek Packages
+            </h2>
+            <p className="text-gray-500 mt-3 max-w-xl mx-auto text-sm">
+              From beginner-friendly trails to challenging summit treks — find your perfect adventure.
+            </p>
           </div>
-        ) : packages.length === 0 ? (
-          <div className="text-center py-16 text-gray-400">
-            <Mountain size={48} className="mx-auto mb-3 opacity-30" />
-            <p>No featured packages yet. Check back soon!</p>
-          </div>
-      ) : (
-  <div className="relative overflow-hidden">
-    <div className="pointer-events-none absolute inset-y-0 left-0 w-12 sm:w-24 bg-gradient-to-r from-gray-50 to-transparent z-10" />
-    <div className="pointer-events-none absolute inset-y-0 right-0 w-12 sm:w-24 bg-gradient-to-l from-gray-50 to-transparent z-10" />
+          <ScrollRow packages={allTreks} loading={loadingTreks} />
+        </div>
 
-    <div className="package-marquee-track flex gap-6 w-max">
-      {[...packages, ...packages].map((pkg, i) => (
-        <PackageCard key={`${pkg._id}-${i}`} pkg={pkg} />
-      ))}
-    </div>
-  </div>
-)}
-        <div className="text-center mt-10">
+        {/* ── View All Button ── */}
+        <div className="text-center mt-4">
           <Link
             to="/packages"
             className="inline-flex items-center gap-2 bg-[#0a1628] hover:bg-yellow-500 hover:text-[#0a1628] text-white font-semibold px-8 py-3 rounded-full transition-colors"
@@ -215,6 +223,7 @@ const FeaturedPackages = () => {
             View All Packages <ChevronRight size={18} />
           </Link>
         </div>
+
       </div>
     </section>
   );
@@ -223,11 +232,6 @@ const FeaturedPackages = () => {
 // ─── Why Travel With Us ──────────────────────────────────────────
 const WhyUs = () => {
   const reasons = [
-    // {
-    //   icon: <Shield size={28} />,
-    //   title: 'Women-Only Groups',
-    //   desc: 'Travel safely in the company of like-minded women with certified female guides.',
-    // },
     {
       icon: <HeartHandshake size={28} />,
       title: 'Trusted Hospitality',
@@ -256,12 +260,17 @@ const WhyUs = () => {
     {
       icon: <Users size={28} />,
       title: 'Community Building',
-      desc: 'Join a growing sisterhood of women who travel, explore, and inspire.',
+      desc: 'Join a growing community of travelers who explore, connect, and inspire.',
     },
     {
       icon: <Mountain size={28} />,
       title: 'Unmatched Diversity',
-      desc: 'From Himalayan treks to coastal escapes — experiences for every woman.',
+      desc: 'From Himalayan treks to coastal escapes — experiences for every traveler.',
+    },
+    {
+      icon: <Shield size={28} />,
+      title: 'Safe Group Travel',
+      desc: 'Travel safely in the company of like-minded people with certified experienced guides.',
     },
   ];
 
@@ -276,7 +285,7 @@ const WhyUs = () => {
             Why Travel With Matrika?
           </h2>
           <p className="text-gray-400 mt-3 max-w-xl mx-auto text-sm">
-            Every journey thoughtfully crafted for safety, community, empowerment, and boundless joy.
+            Every journey thoughtfully crafted for safety, community, and unforgettable experiences.
           </p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -298,120 +307,6 @@ const WhyUs = () => {
   );
 };
 
-// // ─── About Section ───────────────────────────────────────────────
-// const About = () => {
-//   const team = [
-//     {
-//       name: 'Archana Uniyal',
-//       role: 'Founder',
-//       initials: 'AU',
-//       photo: Archana, // e.g. '/team/archana.jpg' — leave empty to fall back to initials
-//       av: 'bg-amber-100 text-amber-900',
-//       badge: 'Leadership',
-//       badgeColor: 'bg-amber-100 text-amber-800',
-//     },
-//     {
-//       name: 'Harshmani Uniyal',
-//       role: 'CEO',
-//       initials: 'HU',
-//       photo: Harshmani,
-//       av: 'bg-[#0a1628] text-yellow-400',
-//       badge: 'Leadership',
-//       badgeColor: 'bg-[#0a1628] text-yellow-400',
-//     },
-//     {
-//       name: 'Ankit Sajwan',
-//       role: 'Company Manager',
-//       initials: 'AS',
-//       photo: Ankit,
-//       av: 'bg-amber-100 text-amber-900',
-//       badge: 'Operations',
-//       badgeColor: 'bg-blue-50 text-blue-800',
-//     },
-//     {
-//       name: 'Arjun Uniyal',
-//       role: 'Accounts Manager',
-//       initials: 'AU',
-//       photo: Arjun,
-//       av: 'bg-[#0a1628] text-yellow-400',
-//       badge: 'Finance',
-//       badgeColor: 'bg-green-50 text-green-800',
-//     },
-//     {
-//       name: 'Shivani',
-//       role: 'Marketing Manager',
-//       initials: 'SH',
-//       photo: Shivani,
-//       av: 'bg-amber-100 text-amber-900',
-//       badge: 'Growth',
-//       badgeColor: 'bg-purple-50 text-purple-800',
-//     },
-
-//   ];
-
-//   return (
-//     <section className="py-16 bg-white">
-//       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-
-//         {/* Header */}
-//         <div className="text-center mb-12">
-//           <span className="inline-block text-xs font-semibold uppercase tracking-widest text-amber-700 bg-amber-100 px-4 py-1.5 rounded-full mb-3">
-//             The People Behind the Magic
-//           </span>
-//           <h2 className="text-3xl sm:text-4xl font-bold text-[#0a1628] mb-2">
-//             Meet the Team
-//           </h2>
-//           <p className="text-gray-400 text-sm">Five passionate people. One mission.</p>
-//         </div>
-
-//         {/* Team Grid */}
-//         <div className="grid grid-cols-2 sm:grid-cols-3 gap-5">
-//           {team.map((member) => (
-//             <div
-//               key={member.name}
-//               className="bg-white border border-gray-100 hover:border-yellow-400 rounded-2xl p-6 text-center transition-all duration-300 hover:-translate-y-1 group"
-//             >
-//               {/* Avatar with dashed ring */}
-//               <div className="relative w-18 h-18 mx-auto mb-4" style={{ width: '72px', height: '72px' }}>
-//                 <div
-//                   className="absolute inset-0 rounded-full border-2 border-dashed border-gray-200 group-hover:border-yellow-400 transition-colors duration-300"
-//                   style={{
-//                     inset: '-6px',
-//                     position: 'absolute',
-//                     borderRadius: '50%',
-//                     width: 'calc(100% + 12px)',
-//                     height: 'calc(100% + 12px)',
-//                   }}
-//                 />
-//                 {member.photo ? (
-//                   <img
-//                     src={member.photo}
-//                     alt={member.name}
-//                     className="w-full h-full rounded-full object-cover object-center"
-//                   />
-//                 ) : (
-//                   <div
-//                     className={`w-full h-full rounded-full flex items-center justify-center text-sm font-bold ${member.av}`}
-//                   >
-//                     {member.initials}
-//                   </div>
-//                 )}
-//               </div>
-
-//               <p className="font-bold text-[#0a1628] text-sm leading-tight mb-1">{member.name}</p>
-//               <p className="text-gray-400 text-xs uppercase tracking-wider mb-3">{member.role}</p>
-//               <span className={`text-xs font-semibold px-3 py-1 rounded-full ${member.badgeColor}`}>
-//                 {member.badge}
-//               </span>
-//             </div>
-//           ))}
-//         </div>
-
-//       </div>
-//     </section>
-//   );
-// };
-
 // ─── Testimonials ────────────────────────────────────────────────
 const Testimonials = () => {
   const testimonials = [
@@ -424,7 +319,7 @@ const Testimonials = () => {
     {
       name: 'Meera Patel',
       city: 'Ahmedabad',
-      text: 'As a solo traveler, I was nervous at first. But Matrika made me feel at home from day one. The sisterhood I found here is priceless!',
+      text: 'As a solo traveler, I was nervous at first. But Matrika made me feel at home from day one. The community I found here is priceless!',
       rating: 5,
     },
     {
@@ -443,7 +338,8 @@ const Testimonials = () => {
             Real Stories
           </p>
           <h2 className="text-3xl sm:text-4xl font-bold text-[#0a1628]">
-            What Our Travelers Say          </h2>
+            What Our Travelers Say
+          </h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {testimonials.map((t) => (
@@ -488,8 +384,8 @@ const CTA = () => (
           </p>
           <ul className="space-y-2 mb-6">
             {[
-              'Women-only safe group travel',
-              'Expert certified female guides',
+              'Safe and curated group travel',
+              'Expert certified local guides',
               'All difficulty levels covered',
               '24/7 support throughout your journey',
             ].map((point) => (
@@ -509,7 +405,6 @@ const CTA = () => (
           </Link>
         </div>
 
-        {/* Quick Contact Form */}
         <div className="bg-white rounded-2xl p-6 shadow-lg">
           <h3 className="font-bold text-[#0a1628] text-lg mb-4">Book Your Trip</h3>
           <QuickContactForm />
@@ -592,10 +487,11 @@ const QuickContactForm = () => {
             type="button"
             key={cat}
             onClick={() => setForm({ ...form, subject: `${cat} Trek Enquiry` })}
-            className={`text-xs px-3 py-1 rounded-full border transition-colors ${form.subject === `${cat} Trek Enquiry`
-              ? 'bg-yellow-500 border-yellow-500 text-[#0a1628] font-semibold'
-              : 'border-gray-200 text-gray-500 hover:border-yellow-400'
-              }`}
+            className={`text-xs px-3 py-1 rounded-full border transition-colors ${
+              form.subject === `${cat} Trek Enquiry`
+                ? 'bg-yellow-500 border-yellow-500 text-[#0a1628] font-semibold'
+                : 'border-gray-200 text-gray-500 hover:border-yellow-400'
+            }`}
           >
             {cat}
           </button>
@@ -625,10 +521,8 @@ const Home = () => {
   return (
     <div>
       <Hero />
-      {/* <Stats /> */}
       <FeaturedPackages />
       <WhyUs />
-      {/* <About /> */}
       <Testimonials />
       <CTA />
     </div>
