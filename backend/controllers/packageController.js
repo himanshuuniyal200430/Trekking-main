@@ -52,8 +52,6 @@ const buildImageObjects = (files) => {
 };
 
 // Helper: delete an image from Cloudinary by its public_id.
-// Errors are logged but not thrown — a failed cleanup shouldn't block
-// the package delete/update operation itself.
 const deleteImageFile = async (publicId) => {
   try {
     await cloudinary.uploader.destroy(publicId);
@@ -73,6 +71,7 @@ export const getPackages = async (req, res) => {
       minPrice,
       maxPrice,
       featured,
+      trekSection,
       sort = '-createdAt',
       page = 1,
       limit = 12,
@@ -83,6 +82,7 @@ export const getPackages = async (req, res) => {
     if (category) filter.category = category;
     if (difficulty) filter.difficulty = difficulty;
     if (featured === 'true') filter.isFeatured = true;
+    if (trekSection === 'true') filter.showInTrekSection = true;
 
     if (minPrice || maxPrice) {
       filter['price.amount'] = {};
