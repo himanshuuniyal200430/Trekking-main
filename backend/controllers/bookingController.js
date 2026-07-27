@@ -1,6 +1,6 @@
 import Booking from '../models/Booking.js';
 import Package from '../models/Package.js';
-import { sendBookingStatusEmail } from '../utils/email.js';
+import { sendBookingStatusEmail, sendNewBookingAlert } from '../utils/email.js';
 
 // Helper: generate next sequential bookingId like TRK00001
 const generateBookingId = async () => {
@@ -64,6 +64,11 @@ export const createBooking = async (req, res) => {
       specialRequests,
       emergencyContact,
     });
+
+    // Populate the package (title + price) for the email template, then
+    // fire-and-forget the owner notification — never blocks the response.
+    await booking.populate('package', 'title price');
+    sendNewBookingAlert(booking);
 
     res.status(201).json({
       success: true,
