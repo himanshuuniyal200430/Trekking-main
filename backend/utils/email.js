@@ -96,6 +96,39 @@ const templates = {
   Completed: completedTemplate,
 };
 
+// Email sent to the OWNER/ADMIN whenever a new booking comes in.
+const newBookingAdminTemplate = (booking) => {
+  const total = calculateTotalPrice(booking.package?.price, booking.groupSize);
+  return {
+    subject: `New Booking Received — ${booking.package?.title || 'Trek'} (${booking.bookingId})`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 560px; margin: 0 auto; color: #1f2937;">
+        <div style="background: #0a1628; padding: 28px 24px; text-align: center;">
+          <h1 style="color: #fbbf24; margin: 0; font-size: 20px;">New Booking Alert</h1>
+        </div>
+        <div style="padding: 28px 24px;">
+          <p>A new booking has just come in for <strong>${booking.package?.title || 'a trek'}</strong>.</p>
+          <table style="width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14px;">
+            <tr><td style="padding: 8px 0; color: #6b7280;">Booking ID</td><td style="padding: 8px 0; font-weight: 600;">${booking.bookingId}</td></tr>
+            <tr><td style="padding: 8px 0; color: #6b7280;">Trek</td><td style="padding: 8px 0; font-weight: 600;">${booking.package?.title || '—'}</td></tr>
+            <tr><td style="padding: 8px 0; color: #6b7280;">Trek Date</td><td style="padding: 8px 0; font-weight: 600;">${formatDate(booking.trekDate)}</td></tr>
+            <tr><td style="padding: 8px 0; color: #6b7280;">Group Size</td><td style="padding: 8px 0; font-weight: 600;">${booking.groupSize}</td></tr>
+            ${total ? `<tr><td style="padding: 8px 0; color: #6b7280;">Total Amount</td><td style="padding: 8px 0; font-weight: 600;">${formatPrice(total)}</td></tr>` : ''}
+          </table>
+          <h3 style="color: #0a1628; margin-bottom: 8px;">Contact Person</h3>
+          <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 14px;">
+            <tr><td style="padding: 6px 0; color: #6b7280;">Name</td><td style="padding: 6px 0; font-weight: 600;">${booking.contactPerson?.name || '—'}</td></tr>
+            <tr><td style="padding: 6px 0; color: #6b7280;">Phone</td><td style="padding: 6px 0; font-weight: 600;">${booking.contactPerson?.phone || '—'}</td></tr>
+            <tr><td style="padding: 6px 0; color: #6b7280;">Email</td><td style="padding: 6px 0; font-weight: 600;">${booking.contactPerson?.email || '—'}</td></tr>
+          </table>
+          ${booking.specialRequests ? `<p style="background: #f9fafb; padding: 12px 16px; border-radius: 8px; font-size: 14px;"><strong>Special Requests:</strong> ${booking.specialRequests}</p>` : ''}
+          <p style="margin-top: 24px;">Log in to the admin panel to review and approve this booking.</p>
+        </div>
+      </div>
+    `,
+  };
+};
+
 // Exchanges the long-lived refresh token for a short-lived access token.
 // This happens on every send — access tokens expire in ~1 hour, so we don't
 // bother caching it; one extra HTTPS call per email is negligible.
@@ -188,5 +221,51 @@ export const sendBookingStatusEmail = async (booking) => {
     console.log(`Status email sent for booking ${booking.bookingId} (${booking.status})`);
   } catch (err) {
     console.error(`Failed to send status email for booking ${booking.bookingId}:`, err.message);
+  }
+};
+
+// Sends a "new booking" alert to the owner/admin inbox. Deliberately swallows
+// all errors — a failed email must never block or fail booking creation itself.
+export const sendNewBookingAlert = async (booking) => {
+  try {
+    // The address that receives owner notifications. Falls back to EMAIL_FROM's
+    // raw email if ADMIN_EMAIL isn't set (e.g. EMAIL_FROM = '"Matrika" <a@b.com>').
+    const to =
+      process.env.ADMIN_EMAIL ||
+      (process.env.EMAIL_FROM || '').match(/[\w.+-]+@[\w-]+\.[\w.-]+/)?.[0];
+
+    if (!to) {
+      console.warn('No ADMIN_EMAIL or parseable EMAIL_FROM set, skipping new-booking alert');
+      return;
+    }
+
+    const { subject, html } = newBookingAdminTemplate(booking);
+
+    const accessToken = await getAccessToken();
+
+    const raw = buildRawMessage({
+      from: process.env.EMAIL_FROM,
+      to,
+      subject,
+      html,
+    });
+
+    const response = await fetch(GMAIL_SEND_URL, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ raw }),
+    });
+
+    if (!response.ok) {
+      const errorBody = await response.text();
+      throw new Error(`Gmail API error (${response.status}): ${errorBody}`);
+    }
+
+    console.log(`New-booking alert sent for booking ${booking.bookingId}`);
+  } catch (err) {
+    console.error(`Failed to send new-booking alert for booking ${booking.bookingId}:`, err.message);
   }
 };
