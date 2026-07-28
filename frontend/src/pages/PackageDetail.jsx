@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import {
   MapPin, Clock, Users, CheckCircle, XCircle,
   Mountain, Calendar, Star, Phone, Mail, ChevronDown, ChevronUp,
-  ArrowLeft, XCircle as X
+  ArrowLeft, XCircle as X, RefreshCw
 } from 'lucide-react';
 import API from '../api/axios';
 import toast from 'react-hot-toast';
@@ -206,13 +206,28 @@ const PackageDetail = () => {
   const [loading, setLoading] = useState(true);
   const [openItinerary, setOpenItinerary] = useState(null);
 
+  const [loadError, setLoadError] = useState(null); // 'not-found' | 'network' | null
+
   useEffect(() => {
     const fetchPackage = async () => {
+      setLoading(true);
+      setLoadError(null);
       try {
         const res = await API.get(`/packages/${slug}`);
         setPkg(res.data.data);
-      } catch {
-        navigate('/packages');
+      } catch (err) {
+        if (err.response?.status === 404) {
+          // Genuinely doesn't exist (or was unpublished) — redirecting to the
+          // packages list here is correct.
+          navigate('/packages');
+        } else {
+          // Anything else (network error, timeout, backend cold-starting on
+          // Render's free tier, 500, etc.) is likely TEMPORARY — do NOT
+          // redirect away. Redirecting on a transient error is what was
+          // causing Google to see this page as a "Soft 404" whenever it
+          // crawled while the backend was still waking up.
+          setLoadError('network');
+        }
       } finally {
         setLoading(false);
       }
@@ -235,6 +250,28 @@ const PackageDetail = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="w-8 h-8 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (loadError === 'network') {
+    return (
+      <div className="min-h-screen flex items-center justify-center px-4">
+        <div className="text-center max-w-sm">
+          <div className="w-14 h-14 bg-yellow-50 rounded-full flex items-center justify-center mx-auto mb-4">
+            <RefreshCw size={24} className="text-yellow-500" />
+          </div>
+          <h2 className="text-lg font-bold text-[#0a1628] mb-2">Taking a bit longer than usual</h2>
+          <p className="text-gray-500 text-sm mb-5">
+            Our server is just waking up — this can happen after a few minutes of inactivity. Please try again.
+          </p>
+          <button
+            onClick={() => window.location.reload()}
+            className="bg-[#0a1628] hover:bg-yellow-500 hover:text-[#0a1628] text-white font-semibold text-sm px-6 py-2.5 rounded-full transition-colors"
+          >
+            Retry
+          </button>
+        </div>
       </div>
     );
   }
