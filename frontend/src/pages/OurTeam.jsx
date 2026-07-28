@@ -3,6 +3,7 @@ import Archana from "../assets/Archana.png";
 import Harshmani from "../assets/Harsh.png";
 import Ayush from "../assets/Ayush.png";
 import Arjun from "../assets/Arjun.png";
+import { useSEO } from '../hooks/useSEO';
 
 const team = [
   {
@@ -53,6 +54,12 @@ const team = [
 ];
 
 const OurTeam = () => {
+  useSEO({
+    title: 'Meet the Team | Matrika Tours and Travels',
+    description: 'Meet the people behind Matrika Tours and Travels — the team crafting your Himalayan adventures.',
+    path: '/our-team',
+  });
+
   return (
     <div>
       {/* Page Header */}
