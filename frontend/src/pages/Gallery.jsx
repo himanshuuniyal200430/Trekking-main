@@ -1,10 +1,17 @@
 import { useState, useEffect } from 'react';
 import { X, Mountain } from 'lucide-react';
 import API from '../api/axios';
+import { useSEO } from '../hooks/useSEO';
 
 const categories = ['All', 'Trek', 'Camp', 'Nature', 'People', 'Wildlife', 'Other'];
 
 const Gallery = () => {
+  useSEO({
+    title: 'Gallery | Matrika Tours and Travels',
+    description: 'Explore photos from our treks and tours across Uttarakhand — real moments from real journeys.',
+    path: '/gallery',
+  });
+
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState('All');
