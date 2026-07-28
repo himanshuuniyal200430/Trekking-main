@@ -1,10 +1,17 @@
 import { useState, useEffect } from 'react';
 import { ChevronDown, HelpCircle, Search } from 'lucide-react';
 import API from '../api/axios';
+import { useSEO } from '../hooks/useSEO';
 
 const categories = ['All', 'Booking', 'Trekking', 'Payment', 'Safety', 'Other'];
 
 const FAQ = () => {
+  useSEO({
+    title: 'FAQs | Matrika Tours and Travels',
+    description: 'Answers to common questions about booking treks and tours with Matrika Tours and Travels.',
+    path: '/faq',
+  });
+
   const [faqs, setFaqs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState('All');
