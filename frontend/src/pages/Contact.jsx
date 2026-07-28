@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Phone, Mail, MapPin, Clock, Send, CheckCircle2 } from 'lucide-react';
 import API from '../api/axios';
+import { useSEO } from '../hooks/useSEO';
 
 const contactInfo = [
   {
@@ -32,6 +33,12 @@ const contactInfo = [
 const initialForm = { name: '', email: '', phone: '', subject: '', message: '' };
 
 const Contact = () => {
+  useSEO({
+    title: 'Contact Us | Matrika Tours and Travels',
+    description: 'Get in touch with Matrika Tours and Travels for trek and tour enquiries. Based in Dehradun, Uttarakhand.',
+    path: '/contact',
+  });
+
   const [form, setForm] = useState(initialForm);
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
