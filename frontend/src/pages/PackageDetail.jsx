@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import API from '../api/axios';
 import toast from 'react-hot-toast';
+import { useSEO } from '../hooks/useSEO';
 
 const ImageGallery = ({ images, title }) => {
   const [active, setActive] = useState(0);
@@ -218,6 +219,17 @@ const PackageDetail = () => {
     };
     fetchPackage();
   }, [slug]);
+
+  // Runs on every pkg/slug change — before the package loads, this falls
+  // back to a generic title so the tab/canonical still points at THIS
+  // page's own URL rather than the homepage.
+  useSEO({
+    title: pkg
+      ? `${pkg.title} | Matrika Tours and Travels`
+      : 'Trek Details | Matrika Tours and Travels',
+    description: pkg?.shortDescription,
+    path: `/packages/${slug}`,
+  });
 
   if (loading) {
     return (
