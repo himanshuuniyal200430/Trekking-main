@@ -5,6 +5,7 @@ import {
   Award, Compass, HeartHandshake, Mountain
 } from 'lucide-react';
 import API from '../api/axios';
+import { useSEO } from '../hooks/useSEO';
 
 // ─── Hero Section ───────────────────────────────────────────────
 const Hero = () => (
@@ -518,6 +519,12 @@ const QuickContactForm = () => {
 
 // ─── Main Home Page ──────────────────────────────────────────────
 const Home = () => {
+  useSEO({
+    title: 'Matrika Tours and Travels | Tour & Trekking Packages in Uttarakhand',
+    description: 'Matrika Tours and Travels offers curated tour and trekking packages across Uttarakhand and beyond. Based in Dehradun, trusted by travelers for personalized itineraries and reliable service.',
+    path: '/',
+  });
+
   return (
     <div>
       <Hero />
