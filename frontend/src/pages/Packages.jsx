@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin, Clock, Users, Mountain, Search, SlidersHorizontal, X } from 'lucide-react';
 import API from '../api/axios';
+import { useSEO } from '../hooks/useSEO';
 
 // ─── Package Card ─────────────────────────────────────────────────
 const PackageCard = ({ pkg }) => (
@@ -87,6 +88,12 @@ const SkeletonCard = () => (
 
 // ─── Main Packages Page ───────────────────────────────────────────
 const Packages = () => {
+  useSEO({
+    title: 'Trek Packages | Matrika Tours and Travels',
+    description: 'Browse curated trek packages across Uttarakhand — from beginner-friendly trails to challenging summit treks.',
+    path: '/packages',
+  });
+
   const [packages, setPackages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState({ total: 0, pages: 1, page: 1 });
