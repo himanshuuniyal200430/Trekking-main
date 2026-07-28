@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSEO } from '../hooks/useSEO';
 import {
   ShieldCheck,
   CalendarX,
@@ -48,6 +49,12 @@ const Section = ({ icon: Icon, title, children, defaultOpen = false }) => {
 };
 
 const TermsAndConditions = () => {
+  useSEO({
+    title: 'Terms & Conditions | Matrika Tours and Travels',
+    description: 'Terms and conditions for booking treks and tours with Matrika Tours and Travels.',
+    path: '/terms',
+  });
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
