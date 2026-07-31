@@ -235,13 +235,13 @@ const PackageDetail = () => {
     fetchPackage();
   }, [slug]);
 
-  // Runs on every pkg/slug change — before the package loads, this falls
-  // back to a generic title so the tab/canonical still points at THIS
-  // page's own URL rather than the homepage.
+  // Canonical is safe to set immediately (it's just the correct URL for this
+  // page). Title/description are only set once the real package data has
+  // loaded — if we set a generic placeholder title here, Google sometimes
+  // captures THAT instead of the real trek title if it renders the page
+  // before the fetch finishes, resulting in a wrong/generic sitelink title.
   useSEO({
-    title: pkg
-      ? `${pkg.title} | Matrika Tours and Travels`
-      : 'Trek Details | Matrika Tours and Travels',
+    title: pkg ? `${pkg.title} | Matrika Tours and Travels` : undefined,
     description: pkg?.shortDescription,
     path: `/packages/${slug}`,
   });
