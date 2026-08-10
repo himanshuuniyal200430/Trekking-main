@@ -239,9 +239,7 @@ const AdminGallery = () => {
     </div>
   )}
 </form>
-                  ))}
-                </div>
-              )}
+                
 
               <div>
                 <label className="block text-sm font-medium text-gray-600 mb-1.5">Category</label>
