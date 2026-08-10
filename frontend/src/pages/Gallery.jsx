@@ -95,11 +95,20 @@ const Gallery = () => {
                 className="break-inside-avoid rounded-xl overflow-hidden cursor-pointer group relative"
                 onClick={() => setLightbox(img)}
               >
-                <img
-                  src={img.url}
-                  alt={img.title || img.category}
-                  className="w-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
+               {img.mediaType === 'video' ? (
+  <video
+    src={img.url}
+    muted
+    playsInline
+    className="w-full object-cover group-hover:scale-105 transition-transform duration-300"
+  />
+) : (
+  <img
+    src={img.url}
+    alt={img.title || img.category}
+    className="w-full object-cover group-hover:scale-105 transition-transform duration-300"
+  />
+)}
                 <div className="absolute inset-0 bg-[#0a1628]/0 group-hover:bg-[#0a1628]/40 transition-colors duration-300 flex items-end p-3">
                   {img.title && (
                     <p className="text-white text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -129,11 +138,20 @@ const Gallery = () => {
             <X size={28} />
           </button>
           <div onClick={(e) => e.stopPropagation()} className="max-w-4xl w-full">
-            <img
-              src={lightbox.url}
-              alt={lightbox.title || lightbox.category}
-              className="w-full max-h-[80vh] object-contain rounded-xl"
-            />
+          {lightbox.mediaType === 'video' ? (
+  <video
+    src={lightbox.url}
+    controls
+    autoPlay
+    className="w-full max-h-[80vh] object-contain rounded-xl"
+  />
+) : (
+  <img
+    src={lightbox.url}
+    alt={lightbox.title || lightbox.category}
+    className="w-full max-h-[80vh] object-contain rounded-xl"
+  />
+)}
             {(lightbox.title || lightbox.category) && (
               <div className="text-center mt-3">
                 {lightbox.title && <p className="text-white font-medium">{lightbox.title}</p>}
