@@ -239,7 +239,6 @@ const AdminGallery = () => {
       ))}
     </div>
   )}
-</form>
                 
 
               <div>
