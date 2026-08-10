@@ -18,6 +18,7 @@ const gallerySchema = new mongoose.Schema(
   {
     url: { type: String, required: true },
     filename: { type: String, required: true },
+    mediaType: { type: String, enum: ['image', 'video'], default: 'image' }, // ADD THIS LINE
     title: { type: String },
     category: {
       type: String,
@@ -28,7 +29,6 @@ const gallerySchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-
 // ----- FAQ -----
 const faqSchema = new mongoose.Schema(
   {
