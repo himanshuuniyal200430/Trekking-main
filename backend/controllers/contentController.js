@@ -100,13 +100,13 @@ export const uploadGalleryImagesHandler = async (req, res) => {
 
     const { category = 'Other', title } = req.body;
 
-    const docs = req.files.map((file) => ({
-      url: file.path,
-      filename: file.filename,
-      title,
-      category,
-    }));
-
+   const docs = req.files.map((file) => ({
+  url: file.path,
+  filename: file.filename,
+  mediaType: file.mimetype.startsWith('video/') ? 'video' : 'image', // ADD THIS LINE
+  title,
+  category,
+}));
     const created = await Gallery.insertMany(docs);
 
     res.status(201).json({ success: true, data: created });
