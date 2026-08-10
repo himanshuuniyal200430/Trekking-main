@@ -192,43 +192,53 @@ const AdminGallery = () => {
                 <X size={20} />
               </button>
             </div>
+<form onSubmit={handleUpload} className="p-6 space-y-4">
+  <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-200 rounded-xl py-8 cursor-pointer hover:border-yellow-400 transition-colors">
+    <Upload size={22} className="text-gray-400" />
+    <span className="text-sm text-gray-500">Click to select images</span>
 
-            <form onSubmit={handleUpload} className="p-6 space-y-4">
-              <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-200 rounded-xl py-8 cursor-pointer hover:border-yellow-400 transition-colors">
-                <Upload size={22} className="text-gray-400" />
-                <span className="text-sm text-gray-500">Click to select images</span>
-                <input
-                  type="file"
-                accept="image/jpeg,image/jpg,image/png,image/webp,video/mp4,video/webm,video/quicktime,video/x-msvideo"
-                  multiple
-                  onChange={handleFileSelect}
-                  className="hidden"
-                />
-              </label>
+    <input
+      type="file"
+      accept="image/jpeg,image/jpg,image/png,image/webp,video/mp4,video/webm,video/quicktime,video/x-msvideo"
+      multiple
+      onChange={handleFileSelect}
+      className="hidden"
+    />
+  </label>
 
-              {selectedFiles.length > 0 && (
-                <div className="grid grid-cols-4 gap-2">
-                  {selectedFiles.map((f, i) => (
-                    <div key={i} className="relative group aspect-square rounded-lg overflow-hidden">
-                      <img
-                        {f.file.type.startsWith('video/') ? (
-  <video src={f.previewUrl} muted className="w-full h-full object-cover" />
-) : (
-  <img
-    src={f.previewUrl}
-    alt={`Selected ${i + 1}`}
-    className="w-full h-full object-cover"
-  />
-)}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => removeSelectedFile(i)}
-                        className="absolute top-1 right-1 bg-black/60 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        <X size={12} />
-                      </button>
-                    </div>
+  {selectedFiles.length > 0 && (
+    <div className="grid grid-cols-4 gap-2">
+      {selectedFiles.map((f, i) => (
+        <div
+          key={i}
+          className="relative group aspect-square rounded-lg overflow-hidden"
+        >
+          {f.file.type.startsWith("video/") ? (
+            <video
+              src={f.previewUrl}
+              muted
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <img
+              src={f.previewUrl}
+              alt={`Selected ${i + 1}`}
+              className="w-full h-full object-cover"
+            />
+          )}
+
+          <button
+            type="button"
+            onClick={() => removeSelectedFile(i)}
+            className="absolute top-1 right-1 bg-black/60 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+          >
+            ×
+          </button>
+        </div>
+      ))}
+    </div>
+  )}
+</form>
                   ))}
                 </div>
               )}
