@@ -151,11 +151,15 @@ const AdminGallery = () => {
               key={img._id}
               className="break-inside-avoid rounded-xl overflow-hidden relative group"
             >
-              <img
-                src={img.url}
-                alt={img.title || img.category}
-                className="w-full object-cover"
-              />
+            {img.mediaType === 'video' ? (
+  <video src={img.url} muted className="w-full object-cover" />
+) : (
+  <img
+    src={img.url}
+    alt={img.title || img.category}
+    className="w-full object-cover"
+  />
+)} 
               <div className="absolute inset-0 bg-[#0a1628]/0 group-hover:bg-[#0a1628]/50 transition-colors duration-300 flex flex-col justify-between p-3">
                 <div className="flex justify-end">
                   <button
@@ -195,7 +199,7 @@ const AdminGallery = () => {
                 <span className="text-sm text-gray-500">Click to select images</span>
                 <input
                   type="file"
-                  accept="image/jpeg,image/jpg,image/png,image/webp"
+                accept="image/jpeg,image/jpg,image/png,image/webp,video/mp4,video/webm,video/quicktime,video/x-msvideo"
                   multiple
                   onChange={handleFileSelect}
                   className="hidden"
@@ -207,9 +211,15 @@ const AdminGallery = () => {
                   {selectedFiles.map((f, i) => (
                     <div key={i} className="relative group aspect-square rounded-lg overflow-hidden">
                       <img
-                        src={f.previewUrl}
-                        alt={`Selected ${i + 1}`}
-                        className="w-full h-full object-cover"
+                        {f.file.type.startsWith('video/') ? (
+  <video src={f.previewUrl} muted className="w-full h-full object-cover" />
+) : (
+  <img
+    src={f.previewUrl}
+    alt={`Selected ${i + 1}`}
+    className="w-full h-full object-cover"
+  />
+)}
                       />
                       <button
                         type="button"
