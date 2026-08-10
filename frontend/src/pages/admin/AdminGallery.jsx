@@ -11,6 +11,7 @@ const AdminGallery = () => {
   const [deletingId, setDeletingId] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
 
+  
   // Upload form state
   const [selectedFiles, setSelectedFiles] = useState([]); // [{ file, previewUrl }]
   const [category, setCategory] = useState('Trek');
